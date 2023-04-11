@@ -4,10 +4,10 @@ import (
 	"context"
 	"sync"
 
-	"github.com/abergasov/retranslator/internal/logger"
-	"github.com/abergasov/retranslator/internal/model"
-	"github.com/abergasov/retranslator/internal/service/requester/orchestrator"
+	"github.com/abergasov/retranslator/pkg/logger"
+	"github.com/abergasov/retranslator/pkg/model"
 	v1 "github.com/abergasov/retranslator/pkg/retranslator"
+	"github.com/abergasov/retranslator/pkg/service/requester/orchestrator"
 	"go.uber.org/zap"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"

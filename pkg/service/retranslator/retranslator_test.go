@@ -7,7 +7,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/abergasov/retranslator/internal/testutils"
+	"github.com/abergasov/retranslator/pkg/testutils"
 	"github.com/google/uuid"
 	"github.com/phayes/freeport"
 	"github.com/stretchr/testify/require"

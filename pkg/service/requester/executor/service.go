@@ -7,8 +7,8 @@ import (
 	"sync"
 	"time"
 
-	"github.com/abergasov/retranslator/internal/logger"
-	"github.com/abergasov/retranslator/internal/model"
+	"github.com/abergasov/retranslator/pkg/logger"
+	"github.com/abergasov/retranslator/pkg/model"
 	"github.com/jellydator/ttlcache/v3"
 )
 

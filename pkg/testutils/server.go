@@ -5,7 +5,7 @@ import (
 	"net"
 	"testing"
 
-	"github.com/abergasov/retranslator/internal/service/retranslator/server"
+	"github.com/abergasov/retranslator/pkg/service/retranslator/server"
 	"github.com/stretchr/testify/require"
 	"google.golang.org/grpc"
 )

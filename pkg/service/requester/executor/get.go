@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"io"
 
-	"github.com/abergasov/retranslator/internal/model"
+	"github.com/abergasov/retranslator/pkg/model"
 )
 
 func (s *Service) CurlLikeBrowser(ctx context.Context, request *model.Request) (*model.Response, error) {

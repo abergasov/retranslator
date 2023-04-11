@@ -5,7 +5,7 @@ import (
 	"context"
 	"sync"
 
-	"github.com/abergasov/retranslator/internal/model"
+	"github.com/abergasov/retranslator/pkg/model"
 	v1 "github.com/abergasov/retranslator/pkg/retranslator"
 	"google.golang.org/grpc"
 )
