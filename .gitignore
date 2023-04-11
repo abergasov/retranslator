@@ -1,0 +1,4 @@
+bin/
+vendor/
+configs/app_conf.yml
+.idea/

@@ -1,0 +1,27 @@
+syntax = "proto3";
+
+
+package retranslator.v1;
+option go_package = "retranslator/v1";
+
+service CommandStream {
+  rpc ListenCommands (stream Response) returns (stream Request) {}
+}
+
+message Request {
+  string requestID = 1;
+  string method = 2;
+  string url = 3;
+  bytes body = 4;
+  map<string, string> headers = 5;
+  bool omitBody = 6;
+  bool omitHeaders = 7;
+  bool newRequest = 8; // if true, re-usage of connection will be ignored and a new one will be generated
+}
+
+message Response {
+  string requestID = 1;
+  int32 statusCode = 2;
+  bytes body = 3;
+  map<string, string> headers = 4;
+}
