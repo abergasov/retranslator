@@ -44,6 +44,8 @@ func (s *Service) ListenCommands(server v1.CommandStream_ListenCommandsServer) e
 		select {
 		case <-s.ctx.Done():
 			return nil
+		case <-server.Context().Done():
+			return nil
 		default:
 			response, err := server.Recv()
 			if err != nil {

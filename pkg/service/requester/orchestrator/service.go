@@ -37,12 +37,10 @@ func (s *Service) Stop() {
 }
 
 func (s *Service) ProcessRequest(request *model.Request) {
-	s.log.Info("processing request")
 	response, err := s.service.Execute(request)
 	if err != nil {
 		s.log.Error("unable to execute request", err)
 		return
 	}
-	s.log.Info("sending response")
 	s.responser <- response
 }

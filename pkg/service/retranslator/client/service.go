@@ -3,6 +3,7 @@ package client
 import (
 	"context"
 	"sync"
+	"time"
 
 	"github.com/abergasov/retranslator/pkg/logger"
 	"github.com/abergasov/retranslator/pkg/model"
@@ -14,25 +15,28 @@ import (
 )
 
 type Service struct {
-	wg         *sync.WaitGroup
-	targetHost string
-	log        logger.AppLogger
-	ctx        context.Context
-	cancel     context.CancelFunc
-	responses  chan *model.Response
-	orchestra  *orchestrator.Service
+	wg              *sync.WaitGroup
+	targetHost      string
+	log             logger.AppLogger
+	ctx             context.Context
+	cancel          context.CancelFunc
+	responses       chan *model.Response
+	orchestra       *orchestrator.Service
+	requestCounts   map[int32]int
+	requestCountsMU sync.Mutex
 }
 
 func NewRelay(log logger.AppLogger, host string, service *orchestrator.Service) *Service {
 	ctx, cancel := context.WithCancel(context.Background())
 	return &Service{
-		wg:         &sync.WaitGroup{},
-		log:        log.With(zap.String("host", host)),
-		targetHost: host,
-		ctx:        ctx,
-		cancel:     cancel,
-		responses:  make(chan *model.Response, 1_000),
-		orchestra:  service,
+		wg:            &sync.WaitGroup{},
+		log:           log.With(zap.String("host", host)),
+		targetHost:    host,
+		ctx:           ctx,
+		cancel:        cancel,
+		responses:     make(chan *model.Response, 1_000),
+		orchestra:     service,
+		requestCounts: map[int32]int{},
 	}
 }
 
@@ -45,6 +49,7 @@ func (r *Service) Start() {
 				return
 			default:
 				r.processConnection()
+				time.Sleep(5 * time.Second) // probably it broken connection
 			}
 		}
 	}()
@@ -55,6 +60,7 @@ func (r *Service) GetResponder() chan<- *model.Response {
 }
 
 func (r *Service) processConnection() {
+	r.log.Info("connecting to target host")
 	conn, err := grpc.Dial(r.targetHost, grpc.WithTransportCredentials(insecure.NewCredentials()))
 	if err != nil {
 		r.log.Error("unable to connect to target host", err)

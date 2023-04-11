@@ -14,8 +14,9 @@ import (
 )
 
 var (
-	appHash    = os.Getenv("GIT_HASH")
-	targetHost = "localhost:48292"
+	appHash = os.Getenv("GIT_HASH")
+	//targetHost = "localhost:48292"
+	targetHost = "161.35.19.232:48292"
 )
 
 func main() {

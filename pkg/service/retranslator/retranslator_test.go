@@ -49,7 +49,7 @@ func TestRetranslator(t *testing.T) {
 		wg.Add(1)
 		go func(requestID string) {
 			defer wg.Done()
-			resp, err := service.ProxyRequest(requestID, http.MethodGet, echoURL+"/echo/"+requestID, nil, false, false)
+			resp, err := service.ProxyRequest(requestID, http.MethodGet, echoURL+"/echo/"+requestID, nil, nil, false, false)
 			require.NoError(t, err)
 			response := <-resp
 			require.Equal(t, int32(http.StatusOK), response.StatusCode)
