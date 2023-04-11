@@ -16,6 +16,9 @@ func (s *Service) CurlLikeBrowser(ctx context.Context, request *model.Request) (
 	}
 
 	client := s.getClient(request.URL, request.Headers["cookie"])
+	for header, headerVal := range request.Headers {
+		req.Header.Add(header, headerVal)
+	}
 	resp, err := client.Do(req.WithContext(ctx))
 	if err != nil {
 		return nil, fmt.Errorf("failed to get url: %w", err)

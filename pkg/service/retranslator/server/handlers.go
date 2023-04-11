@@ -2,11 +2,12 @@ package server
 
 import (
 	"errors"
+
 	"github.com/abergasov/retranslator/pkg/model"
 	v1 "github.com/abergasov/retranslator/pkg/retranslator"
 )
 
-func (s *Service) ProxyRequest(requestID, method, url string, body []byte, omitBody, omitHeaders bool) (<-chan *model.Response, error) {
+func (s *Service) ProxyRequest(requestID, method, url string, headers map[string]string, body []byte, omitBody, omitHeaders bool) (<-chan *model.Response, error) {
 	s.responseMapperMU.Lock()
 	if _, ok := s.responseMapper[requestID]; !ok {
 		s.responseMapper[requestID] = make(chan *model.Response, 1_000)
@@ -15,6 +16,7 @@ func (s *Service) ProxyRequest(requestID, method, url string, body []byte, omitB
 	s.responseMapperMU.Unlock()
 	request := &v1.Request{
 		RequestID:   requestID,
+		Headers:     headers,
 		Method:      method,
 		Url:         url,
 		Body:        body,
