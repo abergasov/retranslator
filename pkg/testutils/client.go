@@ -3,10 +3,10 @@ package testutils
 import (
 	"testing"
 
-	"github.com/abergasov/retranslator/internal/logger"
-	"github.com/abergasov/retranslator/internal/service/requester/executor"
-	"github.com/abergasov/retranslator/internal/service/requester/orchestrator"
-	"github.com/abergasov/retranslator/internal/service/retranslator/client"
+	"github.com/abergasov/retranslator/pkg/logger"
+	"github.com/abergasov/retranslator/pkg/service/requester/executor"
+	"github.com/abergasov/retranslator/pkg/service/requester/orchestrator"
+	"github.com/abergasov/retranslator/pkg/service/retranslator/client"
 	"github.com/stretchr/testify/require"
 	"go.uber.org/zap"
 )
