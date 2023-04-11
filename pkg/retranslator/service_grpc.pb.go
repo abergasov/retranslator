@@ -4,7 +4,7 @@
 // - protoc             v3.21.12
 // source: service.proto
 
-package v1
+package retranslator
 
 import (
 	context "context"
@@ -34,7 +34,7 @@ func NewCommandStreamClient(cc grpc.ClientConnInterface) CommandStreamClient {
 }
 
 func (c *commandStreamClient) ListenCommands(ctx context.Context, opts ...grpc.CallOption) (CommandStream_ListenCommandsClient, error) {
-	stream, err := c.cc.NewStream(ctx, &CommandStream_ServiceDesc.Streams[0], "/retranslator.v1.CommandStream/ListenCommands", opts...)
+	stream, err := c.cc.NewStream(ctx, &CommandStream_ServiceDesc.Streams[0], "/retranslator.CommandStream/ListenCommands", opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -122,7 +122,7 @@ func (x *commandStreamListenCommandsServer) Recv() (*Response, error) {
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
 var CommandStream_ServiceDesc = grpc.ServiceDesc{
-	ServiceName: "retranslator.v1.CommandStream",
+	ServiceName: "retranslator.CommandStream",
 	HandlerType: (*CommandStreamServer)(nil),
 	Methods:     []grpc.MethodDesc{},
 	Streams: []grpc.StreamDesc{

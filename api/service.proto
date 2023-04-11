@@ -1,8 +1,8 @@
 syntax = "proto3";
 
 
-package retranslator.v1;
-option go_package = "retranslator/v1";
+package retranslator;
+option go_package = "pkg/retranslator";
 
 service CommandStream {
   rpc ListenCommands (stream Response) returns (stream Request) {}
