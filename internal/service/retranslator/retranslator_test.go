@@ -3,11 +3,11 @@ package retranslator_test
 import (
 	"fmt"
 	"net/http"
-	"retranslator/internal/testutils"
 	"sync"
 	"testing"
 	"time"
 
+	"github.com/abergasov/retranslator/internal/testutils"
 	"github.com/google/uuid"
 	"github.com/phayes/freeport"
 	"github.com/stretchr/testify/require"

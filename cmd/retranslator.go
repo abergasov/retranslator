@@ -4,18 +4,18 @@ import (
 	"log"
 	"os"
 	"os/signal"
-	"retranslator/internal/logger"
-	"retranslator/internal/service/requester/executor"
-	"retranslator/internal/service/requester/orchestrator"
-	"retranslator/internal/service/retranslator/client"
 	"syscall"
 
+	"github.com/abergasov/retranslator/internal/logger"
+	"github.com/abergasov/retranslator/internal/service/requester/executor"
+	"github.com/abergasov/retranslator/internal/service/requester/orchestrator"
+	"github.com/abergasov/retranslator/internal/service/retranslator/client"
 	"go.uber.org/zap"
 )
 
 var (
 	appHash    = os.Getenv("GIT_HASH")
-	targetHost = "http://localhost:8080"
+	targetHost = "http://localhost:48292"
 )
 
 func main() {

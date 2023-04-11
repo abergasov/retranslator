@@ -4,12 +4,12 @@ import (
 	"context"
 	"fmt"
 	"net/http"
-	"retranslator/internal/logger"
-	"retranslator/internal/model"
 	"sync"
 	"time"
 
-	ttlcache "github.com/jellydator/ttlcache/v3"
+	"github.com/abergasov/retranslator/internal/logger"
+	"github.com/abergasov/retranslator/internal/model"
+	"github.com/jellydator/ttlcache/v3"
 )
 
 type Service struct {

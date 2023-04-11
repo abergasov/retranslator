@@ -5,7 +5,8 @@ import (
 	"context"
 	"fmt"
 	"io"
-	"retranslator/internal/model"
+
+	"github.com/abergasov/retranslator/internal/model"
 )
 
 func (s *Service) CurlLikeBrowser(ctx context.Context, request *model.Request) (*model.Response, error) {

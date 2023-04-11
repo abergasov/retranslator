@@ -3,9 +3,8 @@ package testutils
 import (
 	"testing"
 
+	"github.com/gofiber/fiber/v2"
 	"github.com/stretchr/testify/require"
-
-	fiber "github.com/gofiber/fiber/v2"
 )
 
 type EchoServer struct {

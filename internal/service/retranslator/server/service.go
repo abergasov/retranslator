@@ -3,10 +3,10 @@ package server
 import (
 	"container/list"
 	"context"
-	"retranslator/internal/model"
-	v1 "retranslator/pkg/retranslator"
 	"sync"
 
+	"github.com/abergasov/retranslator/internal/model"
+	v1 "github.com/abergasov/retranslator/pkg/retranslator"
 	"google.golang.org/grpc"
 )
 

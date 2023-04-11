@@ -2,8 +2,8 @@ package server
 
 import (
 	"errors"
-	"retranslator/internal/model"
-	v1 "retranslator/pkg/retranslator"
+	"github.com/abergasov/retranslator/internal/model"
+	v1 "github.com/abergasov/retranslator/pkg/retranslator"
 )
 
 func (s *Service) ProxyRequest(requestID, method, url string, body []byte, omitBody, omitHeaders bool) (<-chan *model.Response, error) {

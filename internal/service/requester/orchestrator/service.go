@@ -2,9 +2,10 @@ package orchestrator
 
 import (
 	"context"
-	"retranslator/internal/logger"
-	"retranslator/internal/model"
-	"retranslator/internal/service/requester/executor"
+
+	"github.com/abergasov/retranslator/internal/logger"
+	"github.com/abergasov/retranslator/internal/model"
+	"github.com/abergasov/retranslator/internal/service/requester/executor"
 )
 
 type Service struct {

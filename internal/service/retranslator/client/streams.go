@@ -2,9 +2,9 @@ package client
 
 import (
 	"io"
-	"retranslator/internal/model"
-	v1 "retranslator/pkg/retranslator"
 
+	"github.com/abergasov/retranslator/internal/model"
+	v1 "github.com/abergasov/retranslator/pkg/retranslator"
 	"go.uber.org/zap"
 )
 

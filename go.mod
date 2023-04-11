@@ -1,4 +1,4 @@
-module retranslator
+module github.com/abergasov/retranslator
 
 go 1.20
 

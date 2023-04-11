@@ -3,9 +3,9 @@ package testutils
 import (
 	"fmt"
 	"net"
-	"retranslator/internal/service/retranslator/server"
 	"testing"
 
+	"github.com/abergasov/retranslator/internal/service/retranslator/server"
 	"github.com/stretchr/testify/require"
 	"google.golang.org/grpc"
 )

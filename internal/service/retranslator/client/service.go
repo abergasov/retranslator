@@ -2,16 +2,15 @@ package client
 
 import (
 	"context"
-	"retranslator/internal/logger"
-	"retranslator/internal/model"
-	"retranslator/internal/service/requester/orchestrator"
-	v1 "retranslator/pkg/retranslator"
 	"sync"
 
-	"google.golang.org/grpc/credentials/insecure"
-
+	"github.com/abergasov/retranslator/internal/logger"
+	"github.com/abergasov/retranslator/internal/model"
+	"github.com/abergasov/retranslator/internal/service/requester/orchestrator"
+	v1 "github.com/abergasov/retranslator/pkg/retranslator"
 	"go.uber.org/zap"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/credentials/insecure"
 )
 
 type Service struct {
