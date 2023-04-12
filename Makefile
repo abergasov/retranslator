@@ -47,6 +47,18 @@ proto: ## Generates protobuf files
 		api/*.proto
 	make gogen
 
+build: ## Build binary
+	${info Building binary...}
+	go build -o ./bin/retranslator ./cmd
+
 
 .PHONY: help install-lint test gogen lint stop dev_up build run init_repo migrate_new
 .DEFAULT_GOAL := help
+
+
+run: build
+	@for i in {1..100}; do \
+		echo "Iteration $$i"; \
+		./bin/retranslator; \
+		sleep 60; \
+	done

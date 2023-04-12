@@ -2,6 +2,8 @@ package client
 
 import (
 	"io"
+	"net/http"
+	"os"
 	"time"
 
 	"go.uber.org/zap"
@@ -14,26 +16,33 @@ func (r *Service) handleCommand(stream v1.CommandStream_ListenCommandsClient) {
 	r.wg.Add(1)
 	defer r.wg.Done()
 	for {
-		resp, err := stream.Recv()
-		if err == io.EOF {
-			r.log.Info("stream closed")
+		select {
+		case <-r.ctx.Done():
 			return
-		}
-		if err != nil {
-			r.log.Error("unable to receive command", err)
+		case <-stream.Context().Done():
 			return
+		default:
+			resp, err := stream.Recv()
+			if err == io.EOF {
+				r.log.Info("stream closed")
+				return
+			}
+			if err != nil {
+				r.log.Error("unable to receive command", err)
+				return
+			}
+			//r.log.Info("received command", zap.String("url", resp.Url), zap.String("method", resp.Method))
+			go r.orchestra.ProcessRequest(&model.Request{
+				RequestID:   resp.RequestID,
+				Method:      resp.Method,
+				URL:         resp.Url,
+				Body:        resp.Body,
+				Headers:     resp.Headers,
+				OmitBody:    resp.OmitBody,
+				OmitHeaders: resp.OmitHeaders,
+				NewRequest:  resp.NewRequest,
+			})
 		}
-		//r.log.Info("received command", zap.String("url", resp.Url), zap.String("method", resp.Method))
-		r.orchestra.ProcessRequest(&model.Request{
-			RequestID:   resp.RequestID,
-			Method:      resp.Method,
-			URL:         resp.Url,
-			Body:        resp.Body,
-			Headers:     resp.Headers,
-			OmitBody:    resp.OmitBody,
-			OmitHeaders: resp.OmitHeaders,
-			NewRequest:  resp.NewRequest,
-		})
 	}
 }
 
@@ -59,7 +68,7 @@ func (r *Service) countRequests(statusCode int32) {
 }
 
 func (r *Service) logRequests() {
-	ticker := time.NewTicker(10 * time.Second)
+	ticker := time.NewTicker(60 * time.Second)
 	for range ticker.C {
 		r.printRequestCounts()
 	}
@@ -71,7 +80,22 @@ func (r *Service) printRequestCounts() {
 	r.requestCounts = make(map[int32]int)
 	r.requestCountsMU.Unlock()
 
+	okCount := 0
+	nonOkCount := 0
 	for k, v := range countMap {
-		r.log.Info("request count", zap.Int32("status", k), zap.Int("count", v))
+		if k == http.StatusOK {
+			okCount = v
+		} else {
+			nonOkCount += v
+		}
+		r.log.Info("request count", zap.Int32("status", k), zap.Int("count", v), zap.String("time", time.Now().Format(time.TimeOnly)))
+	}
+
+	percentage := (nonOkCount / (nonOkCount + okCount)) * 100
+	if percentage > 30 {
+		r.Stop()
+		r.log.Info("bad requests more than limit", zap.Int("count", nonOkCount), zap.Int("ok_count", okCount), zap.Int("percentage", percentage))
+		time.Sleep(15 * time.Minute)
+		os.Exit(0)
 	}
 }

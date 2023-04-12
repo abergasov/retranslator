@@ -1,6 +1,7 @@
 package executor
 
 import (
+	"context"
 	"fmt"
 	"net/http"
 	"time"
@@ -9,18 +10,18 @@ import (
 	"github.com/jellydator/ttlcache/v3"
 )
 
-func (s *Service) getRequest(targetURL, cookie string) (http.Request, error) {
+func (s *Service) getRequest(ctx context.Context, targetURL, cookie string) (*http.Request, error) {
 	key := targetURL + cookie
 	item := s.cacheRequests.Get(key)
 	if item != nil {
-		return *item.Value(), nil
+		return item.Value().WithContext(ctx), nil
 	}
 	req, err := http.NewRequest(http.MethodGet, targetURL, http.NoBody)
 	if err != nil {
-		return http.Request{}, fmt.Errorf("failed to get url: %w", err)
+		return &http.Request{}, fmt.Errorf("failed to get url: %w", err)
 	}
 	s.cacheRequests.Set(key, req, ttlcache.DefaultTTL)
-	return *req, err
+	return req.WithContext(ctx), err
 }
 
 func (s *Service) getClient(targetURL, cookie string) *http.Client {

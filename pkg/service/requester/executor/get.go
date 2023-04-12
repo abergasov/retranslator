@@ -10,7 +10,7 @@ import (
 )
 
 func (s *Service) CurlLikeBrowser(ctx context.Context, request *model.Request) (*model.Response, error) {
-	req, err := s.getRequest(request.URL, request.Headers["cookie"])
+	req, err := s.getRequest(ctx, request.URL, request.Headers["cookie"])
 	if err != nil {
 		return nil, fmt.Errorf("failed to get url: %w", err)
 	}
@@ -19,7 +19,7 @@ func (s *Service) CurlLikeBrowser(ctx context.Context, request *model.Request) (
 	for header, headerVal := range request.Headers {
 		req.Header.Add(header, headerVal)
 	}
-	resp, err := client.Do(req.WithContext(ctx))
+	resp, err := client.Do(req)
 	if err != nil {
 		return nil, fmt.Errorf("failed to get url: %w", err)
 	}
