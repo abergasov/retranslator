@@ -48,15 +48,22 @@ func (r *Service) handleCommand(stream v1.CommandStream_ListenCommandsClient) {
 
 func (r *Service) sendResponse(stream v1.CommandStream_ListenCommandsClient) {
 	for resp := range r.orchestra.GetResponder() {
-		r.countRequests(resp.StatusCode)
-		//r.log.Info("send response to server", zap.Int32("status", resp.StatusCode), zap.String("request_id", resp.RequestID))
-		if err := stream.Send(&v1.Response{
-			RequestID:  resp.RequestID,
-			StatusCode: resp.StatusCode,
-			Body:       resp.Body,
-			Headers:    resp.Headers,
-		}); err != nil {
-			r.log.Error("unable to send response", err)
+		select {
+		case <-r.ctx.Done():
+			return
+		case <-stream.Context().Done():
+			return
+		default:
+			r.countRequests(resp.StatusCode)
+			//r.log.Info("send response to server", zap.Int32("status", resp.StatusCode), zap.String("request_id", resp.RequestID))
+			if err := stream.Send(&v1.Response{
+				RequestID:  resp.RequestID,
+				StatusCode: resp.StatusCode,
+				Body:       resp.Body,
+				Headers:    resp.Headers,
+			}); err != nil {
+				r.log.Error("unable to send response", err)
+			}
 		}
 	}
 }
@@ -91,6 +98,9 @@ func (r *Service) printRequestCounts() {
 		r.log.Info("request count", zap.Int32("status", k), zap.Int("count", v), zap.String("time", time.Now().Format(time.TimeOnly)))
 	}
 
+	if nonOkCount+okCount == 0 {
+		return
+	}
 	percentage := (nonOkCount / (nonOkCount + okCount)) * 100
 	if percentage > 30 {
 		r.Stop()
