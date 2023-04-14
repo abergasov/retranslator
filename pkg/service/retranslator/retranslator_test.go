@@ -1,6 +1,7 @@
 package retranslator_test
 
 import (
+	"encoding/json"
 	"fmt"
 	"net/http"
 	"sync"
@@ -76,6 +77,7 @@ func TestRetranslator_431(t *testing.T) {
 
 	address := fmt.Sprintf("127.0.0.1:%d", appPort)
 	_, err = testutils.NewRetranslatorClient(t, "A", address)
+	require.NoError(t, err)
 
 	requestID := uuid.NewString()
 
@@ -92,6 +94,40 @@ func TestRetranslator_431(t *testing.T) {
 		response := <-resp
 		require.Equal(t, int32(http.StatusOK), response.StatusCode)
 		require.Equal(t, requestID, string(response.Body))
+	}
+}
 
+func TestRetranslator_Ja3_Fingerprint(t *testing.T) {
+	appPort, err := freeport.GetFreePort()
+	require.NoError(t, err, "failed to get free port for app")
+
+	service, err := testutils.NewRetranslatorServer(t, appPort)
+	require.NoError(t, err)
+	t.Log("retranslator server started")
+
+	targetURL := "https://tools.scrapfly.io/api/fp/ja3?extended=1"
+
+	address := fmt.Sprintf("127.0.0.1:%d", appPort)
+	_, err = testutils.NewRetranslatorClient(t, "A", address)
+	require.NoError(t, err)
+
+	time.Sleep(1 * time.Second)
+	fingerPrints := make(map[string]struct{})
+	for i := 0; i < 10; i++ {
+		resp, err := service.ProxyRequest(uuid.NewString(), http.MethodGet, targetURL, map[string]string{}, nil, false, false)
+		require.NoError(t, err)
+		response := <-resp
+		require.Equal(t, int32(http.StatusOK), response.StatusCode)
+		type a struct {
+			Digest string `json:"digest"`
+		}
+		var b a
+		require.NoError(t, json.Unmarshal(response.Body, &b))
+		require.NotEmpty(t, b.Digest)
+		if _, ok := fingerPrints[b.Digest]; ok {
+			t.Fatal("duplicate fingerprint")
+		}
+		fingerPrints[b.Digest] = struct{}{}
+		println(b.Digest)
 	}
 }

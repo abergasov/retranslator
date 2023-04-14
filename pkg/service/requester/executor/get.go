@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"io"
 
+	browser "github.com/EDDYCJY/fake-useragent"
 	"github.com/abergasov/retranslator/pkg/model"
 )
 
@@ -21,6 +22,7 @@ func (s *Service) CurlLikeBrowser(ctx context.Context, request *model.Request) (
 			req.Header.Set(header, headerVal)
 		}
 	}
+	req.Header.Set("User-Agent", browser.Chrome())
 	resp, err := client.Do(req)
 	if err != nil {
 		return nil, fmt.Errorf("failed to get url: %w", err)
@@ -53,6 +55,16 @@ func (s *Service) CurlLikeBrowser(ctx context.Context, request *model.Request) (
 	result.Body, err = io.ReadAll(reader)
 	if err != nil {
 		return nil, fmt.Errorf("failed to read response body: %w", err)
+	}
+	if resp.StatusCode == 431 {
+		respStr := string(result.Body)
+		var res string
+		if len(respStr) > 165 {
+			res = respStr[0:165]
+		} else {
+			res = respStr
+		}
+		return nil, fmt.Errorf("request failed with status code %d: %s", resp.StatusCode, res)
 	}
 	return result, nil
 }

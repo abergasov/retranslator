@@ -31,7 +31,6 @@ func (r *Service) handleCommand(stream v1.CommandStream_ListenCommandsClient) {
 				r.log.Error("unable to receive command", err)
 				return
 			}
-			//r.log.Info("received command", zap.String("url", resp.Url), zap.String("method", resp.Method))
 			go r.orchestra.ProcessRequest(&model.Request{
 				RequestID:   resp.RequestID,
 				Method:      resp.Method,
@@ -55,7 +54,6 @@ func (r *Service) sendResponse(stream v1.CommandStream_ListenCommandsClient) {
 			return
 		default:
 			r.countRequests(resp.StatusCode)
-			//r.log.Info("send response to server", zap.Int32("status", resp.StatusCode), zap.String("request_id", resp.RequestID))
 			if err := stream.Send(&v1.Response{
 				RequestID:  resp.RequestID,
 				StatusCode: resp.StatusCode,

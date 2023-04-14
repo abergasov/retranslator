@@ -2,11 +2,12 @@ package executor
 
 import (
 	"context"
+	"crypto/tls"
 	"fmt"
 	"net/http"
-	"time"
 
-	cloudflarebp "github.com/DaRealFreak/cloudflare-bp-go"
+	"golang.org/x/net/http2"
+
 	"github.com/jellydator/ttlcache/v3"
 )
 
@@ -36,13 +37,34 @@ func (s *Service) getClient(targetURL, cookie string) *http.Client {
 	defer s.clientsMU.Unlock()
 
 	client = &http.Client{
-		Transport: &http.Transport{
-			MaxIdleConns:        30,
-			MaxIdleConnsPerHost: 30,
-			IdleConnTimeout:     90 * time.Second,
+		Transport: &http2.Transport{
+			TLSClientConfig: &tls.Config{
+				CurvePreferences: []tls.CurveID{tls.CurveP256, tls.CurveP384, tls.CurveP521, tls.X25519},
+				CipherSuites: []uint16{
+					tls.TLS_AES_128_GCM_SHA256,
+					tls.TLS_AES_256_GCM_SHA384,
+					tls.TLS_CHACHA20_POLY1305_SHA256,
+					tls.TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256,
+					tls.TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256,
+					tls.TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384,
+					tls.TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384,
+					tls.TLS_ECDHE_ECDSA_WITH_CHACHA20_POLY1305_SHA256,
+					tls.TLS_ECDHE_RSA_WITH_CHACHA20_POLY1305_SHA256,
+					tls.TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA,
+					tls.TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA,
+					tls.TLS_RSA_WITH_AES_128_GCM_SHA256,
+					tls.TLS_RSA_WITH_AES_256_GCM_SHA384,
+					tls.TLS_RSA_WITH_AES_128_CBC_SHA,
+					tls.TLS_RSA_WITH_AES_256_CBC_SHA,
+				},
+			},
+			//TLSClientConfig:
+			//MaxIdleConns:        30,
+			//MaxIdleConnsPerHost: 30,
+			//IdleConnTimeout:     90 * time.Second,
 		},
 	}
-	client.Transport = cloudflarebp.AddCloudFlareByPass(client.Transport)
+	// client.Transport = cloudflarebp.AddCloudFlareByPass(client.Transport)
 	s.clients[key] = client
 	return client
 }
