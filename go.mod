@@ -1,6 +1,6 @@
 module github.com/abergasov/retranslator
 
-go 1.19
+go 1.20
 
 require (
 	github.com/DaRealFreak/cloudflare-bp-go v1.0.4
