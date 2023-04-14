@@ -5,8 +5,7 @@ import (
 	"crypto/tls"
 	"fmt"
 	"net/http"
-
-	"golang.org/x/net/http2"
+	"time"
 
 	"github.com/jellydator/ttlcache/v3"
 )
@@ -37,7 +36,7 @@ func (s *Service) getClient(targetURL, cookie string) *http.Client {
 	defer s.clientsMU.Unlock()
 
 	client = &http.Client{
-		Transport: &http2.Transport{
+		Transport: &http.Transport{
 			TLSClientConfig: &tls.Config{
 				CurvePreferences: []tls.CurveID{tls.CurveP256, tls.CurveP384, tls.CurveP521, tls.X25519},
 				CipherSuites: []uint16{
@@ -58,10 +57,9 @@ func (s *Service) getClient(targetURL, cookie string) *http.Client {
 					tls.TLS_RSA_WITH_AES_256_CBC_SHA,
 				},
 			},
-			//TLSClientConfig:
-			//MaxIdleConns:        30,
-			//MaxIdleConnsPerHost: 30,
-			//IdleConnTimeout:     90 * time.Second,
+			MaxIdleConns:        30,
+			MaxIdleConnsPerHost: 30,
+			IdleConnTimeout:     90 * time.Second,
 		},
 	}
 	// client.Transport = cloudflarebp.AddCloudFlareByPass(client.Transport)

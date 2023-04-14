@@ -50,6 +50,7 @@ proto: ## Generates protobuf files
 build: ## Build binary
 	${info Building binary...}
 	go build -o ./bin/retranslator ./cmd
+	#tinygo build -o ./bin/retranslator  ./cmd
 
 
 .PHONY: help install-lint test gogen lint stop dev_up build run init_repo migrate_new

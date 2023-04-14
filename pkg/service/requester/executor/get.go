@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"io"
 
-	browser "github.com/EDDYCJY/fake-useragent"
 	"github.com/abergasov/retranslator/pkg/model"
 )
 
@@ -22,7 +21,6 @@ func (s *Service) CurlLikeBrowser(ctx context.Context, request *model.Request) (
 			req.Header.Set(header, headerVal)
 		}
 	}
-	req.Header.Set("User-Agent", browser.Chrome())
 	resp, err := client.Do(req)
 	if err != nil {
 		return nil, fmt.Errorf("failed to get url: %w", err)
