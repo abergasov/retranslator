@@ -3,15 +3,16 @@ package counter
 import (
 	"encoding/json"
 	"fmt"
-	"go.uber.org/zap"
 	"io"
 	"net/http"
 	"time"
+
+	"go.uber.org/zap"
 )
 
 func (s *Service) observeIP() {
 	s.saveIP()
-	for range time.NewTicker(1 * time.Minute).C {
+	for range time.NewTicker(5 * time.Minute).C {
 		s.saveIP()
 	}
 }
