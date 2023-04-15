@@ -33,6 +33,7 @@ func main() {
 	}
 	defer dbConnect.Close()
 	requestCounter := counter.NewService(appLog.With(zap.String("service", "counter")), dbConnect)
+	defer requestCounter.Stop()
 
 	curler := executor.NewService(appLog.With(zap.String("service", "executor")))
 	orchestra := orchestrator.NewService(appLog.With(zap.String("service", "orchestrator")), curler)
