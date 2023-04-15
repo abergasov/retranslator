@@ -66,6 +66,7 @@ func (s *Service) CanRequest() error {
 }
 
 func (s *Service) Stop() {
+	s.log.Info("stopping")
 	if err := s.saveState(); err != nil {
 		s.log.Error("failed save state on exist", err)
 	}

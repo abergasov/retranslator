@@ -27,6 +27,7 @@ func main() {
 	if err != nil {
 		log.Fatalf("unable to create logger: %s", err)
 	}
+	appLog.Info("app starting...", zap.String("db", dbPath))
 	dbConnect, err := database.InitDBConnect(dbPath)
 	if err != nil {
 		appLog.Fatal("unable to connect to db", err)

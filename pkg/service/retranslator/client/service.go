@@ -10,7 +10,6 @@ import (
 	v1 "github.com/abergasov/retranslator/pkg/retranslator"
 	"github.com/abergasov/retranslator/pkg/service/counter"
 	"github.com/abergasov/retranslator/pkg/service/requester/orchestrator"
-	"go.uber.org/zap"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 )
@@ -32,7 +31,7 @@ func NewRelay(log logger.AppLogger, host string, service *orchestrator.Service, 
 	ctx, cancel := context.WithCancel(context.Background())
 	srv := &Service{
 		wg:             &sync.WaitGroup{},
-		log:            log.With(zap.String("host", host)),
+		log:            log,
 		targetHost:     host,
 		ctx:            ctx,
 		cancel:         cancel,
@@ -84,8 +83,9 @@ func (r *Service) processConnection() {
 }
 
 func (r *Service) Stop() {
+	r.log.Info("stopping relay")
 	r.cancel()
 	r.orchestra.Stop()
-	r.log.Info("relay stopped")
 	r.wg.Wait()
+	r.log.Info("relay stopped")
 }

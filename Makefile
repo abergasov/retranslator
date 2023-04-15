@@ -1,5 +1,7 @@
 GOLANGCI_LINT := $(shell command -v golangci-lint 2> /dev/null)
 LOCAL_BIN:=$(CURDIR)/bin
+FILE_HASH := $(shell git rev-parse HEAD)
+PROJECT_NAME:=retranslator
 
 export PATH:=$(LOCAL_BIN):$(PATH)
 
@@ -49,17 +51,28 @@ proto: ## Generates protobuf files
 
 build: ## Build binary
 	${info Building binary...}
-	go build -o ./bin/retranslator ./cmd
-	#tinygo build -o ./bin/retranslator  ./cmd
+	go build -ldflags="-X 'main.dbPath=/var/lib/retranslator/storage.db'" -o ./bin/retranslator ./cmd
 
+stop: ## Stops the local environment
+	${info Stopping containers...}
+	docker container ls -q --filter name=${PROJECT_NAME} ; true
+	${info Dropping containers...}
+	docker rm -f -v $(shell docker container ls -q --filter name=${PROJECT_NAME}) ; true
 
-.PHONY: help install-lint test gogen lint stop dev_up build run init_repo migrate_new
-.DEFAULT_GOAL := help
+run_docker: stop ## Run docker with binary
+	${info Run app containered}
+	GIT_HASH=${FILE_HASH} docker compose -p ${PROJECT_NAME} up --build -d
 
-
-run: build
+run: build ## Run binary
 	@for i in {1..100}; do \
 		echo "Iteration $$i"; \
 		./bin/retranslator; \
 		sleep 60; \
 	done
+
+logs_d: ## Show container logs
+	${info Show logs...}
+	docker logs -f retranslator
+
+.PHONY: help install-lint test gogen lint stop dev_up build run run_docker logs_d stop
+.DEFAULT_GOAL := help

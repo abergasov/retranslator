@@ -13,7 +13,8 @@ func NewAppLogger(appHash string) (*Logger, error) {
 	cnf := zap.NewProductionConfig()
 	cnf.DisableStacktrace = true
 	cnf.DisableCaller = true
-	cnf.EncoderConfig.TimeKey = zapcore.OmitKey
+	//cnf.EncoderConfig.TimeKey = zapcore.OmitKey
+	cnf.EncoderConfig.EncodeTime = zapcore.TimeEncoderOfLayout("2006_01_02 15:04:05")
 
 	z, err := cnf.Build()
 	if err != nil {
@@ -21,7 +22,7 @@ func NewAppLogger(appHash string) (*Logger, error) {
 	}
 
 	if appHash != "" {
-		z = z.With(zap.String("hash", appHash))
+		z = z.With(zap.String("hash", appHash[:7]))
 	}
 	return &Logger{l: z}, nil
 }

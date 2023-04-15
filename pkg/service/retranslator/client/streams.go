@@ -15,6 +15,7 @@ import (
 func (r *Service) handleCommand(stream v1.CommandStream_ListenCommandsClient) {
 	r.wg.Add(1)
 	defer r.wg.Done()
+	r.requestCounter.DetectIP()
 	for {
 		select {
 		case <-r.ctx.Done():

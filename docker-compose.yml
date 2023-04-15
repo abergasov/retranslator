@@ -1,0 +1,17 @@
+version: '3'
+
+volumes:
+  data_counter:
+
+services:
+  app:
+    container_name: retranslator
+    build:
+      context: .
+      dockerfile: Dockerfile
+    restart: always
+    environment:
+      GIT_HASH: $GIT_HASH
+    volumes:
+      - data_counter:/var/lib/retranslator
+    command: [ "/app/retranslator" ]

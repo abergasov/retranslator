@@ -11,13 +11,13 @@ import (
 )
 
 func (s *Service) observeIP() {
-	s.saveIP()
+	s.DetectIP()
 	for range time.NewTicker(5 * time.Minute).C {
-		s.saveIP()
+		s.DetectIP()
 	}
 }
 
-func (s *Service) saveIP() {
+func (s *Service) DetectIP() {
 	ip, err := s.getPublicIP()
 	if err != nil {
 		s.log.Error("unable to get public IP", err)

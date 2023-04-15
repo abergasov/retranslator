@@ -14,7 +14,7 @@ type event struct {
 }
 
 func (s *Service) migrate() error {
-	q := []string{fmt.Sprintf(`create table %s
+	q := []string{fmt.Sprintf(`create table if not exists %s
 		(
 			retranslation_date text,
 			used_ip            text,
