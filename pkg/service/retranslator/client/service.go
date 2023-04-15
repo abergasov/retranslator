@@ -8,6 +8,7 @@ import (
 	"github.com/abergasov/retranslator/pkg/logger"
 	"github.com/abergasov/retranslator/pkg/model"
 	v1 "github.com/abergasov/retranslator/pkg/retranslator"
+	"github.com/abergasov/retranslator/pkg/service/counter"
 	"github.com/abergasov/retranslator/pkg/service/requester/orchestrator"
 	"go.uber.org/zap"
 	"google.golang.org/grpc"
@@ -24,19 +25,21 @@ type Service struct {
 	orchestra       *orchestrator.Service
 	requestCounts   map[int32]int
 	requestCountsMU sync.Mutex
+	requestCounter  *counter.Service
 }
 
-func NewRelay(log logger.AppLogger, host string, service *orchestrator.Service) *Service {
+func NewRelay(log logger.AppLogger, host string, service *orchestrator.Service, requestCounter *counter.Service) *Service {
 	ctx, cancel := context.WithCancel(context.Background())
 	srv := &Service{
-		wg:            &sync.WaitGroup{},
-		log:           log.With(zap.String("host", host)),
-		targetHost:    host,
-		ctx:           ctx,
-		cancel:        cancel,
-		responses:     make(chan *model.Response, 1_000),
-		orchestra:     service,
-		requestCounts: map[int32]int{},
+		wg:             &sync.WaitGroup{},
+		log:            log.With(zap.String("host", host)),
+		targetHost:     host,
+		ctx:            ctx,
+		cancel:         cancel,
+		responses:      make(chan *model.Response, 1_000),
+		orchestra:      service,
+		requestCounts:  map[int32]int{},
+		requestCounter: requestCounter,
 	}
 	go srv.logRequests()
 	return srv

@@ -3,3 +3,4 @@ vendor/
 configs/app_conf.yml
 .idea/
 cover.out
+storage.db

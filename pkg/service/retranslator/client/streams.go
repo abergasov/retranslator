@@ -31,6 +31,13 @@ func (r *Service) handleCommand(stream v1.CommandStream_ListenCommandsClient) {
 				r.log.Error("unable to receive command", err)
 				return
 			}
+			if err = r.requestCounter.CanRequest(); err != nil {
+				r.log.Error("unable to process request", err)
+				r.Stop()
+				time.Sleep(15 * time.Minute)
+				os.Exit(0)
+				return
+			}
 			go r.orchestra.ProcessRequest(&model.Request{
 				RequestID:   resp.RequestID,
 				Method:      resp.Method,
