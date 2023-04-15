@@ -3,6 +3,8 @@ package counter
 import (
 	"fmt"
 	"time"
+
+	"go.uber.org/zap"
 )
 
 type event struct {
@@ -20,6 +22,7 @@ func (s *Service) migrate() error {
 			constraint counter_stat_pk
 				primary key (retranslation_date, used_ip)
 		);`, tableName),
+		fmt.Sprintf(`delete from %s where retranslation_date != '%s'`, tableName, s.currentDate),
 	}
 	for _, query := range q {
 		if _, err := s.conn.Client().Exec(query); err != nil {
@@ -45,6 +48,7 @@ func (s *Service) loadState() error {
 			data[evt.Date] = make(map[string]uint64)
 		}
 		data[evt.Date][evt.IP] = evt.Count
+		s.log.Info("load processed requests", zap.String("date", evt.Date), zap.String("ip", evt.IP), zap.Uint64("count", evt.Count))
 	}
 	s.counterMU.Lock()
 	s.counter = data

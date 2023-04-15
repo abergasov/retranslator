@@ -3,6 +3,7 @@ package counter
 import (
 	"encoding/json"
 	"fmt"
+	"go.uber.org/zap"
 	"io"
 	"net/http"
 	"time"
@@ -45,5 +46,6 @@ func (s *Service) getPublicIP() (string, error) {
 	if err = json.Unmarshal(body, &ip); err != nil {
 		return "", fmt.Errorf("unable to unmarshal response body: %w", err)
 	}
+	s.log.Info("got current client ip", zap.String("ip", ip.Query))
 	return ip.Query, nil
 }
