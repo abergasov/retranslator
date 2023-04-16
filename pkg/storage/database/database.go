@@ -19,6 +19,14 @@ func InitDBConnect(dbPath string) (DBConnector, error) {
 	return &DBConnect{db}, err
 }
 
+func InitMemory() (DBConnector, error) {
+	db, err := sqlx.Connect("sqlite3", ":memory:")
+	if err != nil {
+		return nil, fmt.Errorf("error connect to db: %w", err)
+	}
+	return &DBConnect{db}, err
+}
+
 func (d *DBConnect) Close() error {
 	return d.db.Close()
 }
