@@ -102,7 +102,7 @@ func (r *Service) printRequestCounts() {
 		} else {
 			nonOkCount += v
 		}
-		r.log.Info("request count", zap.Int32("status", k), zap.Int("count", v), zap.String("time", time.Now().Format(time.TimeOnly)))
+		r.log.Info("request count", zap.Int32("status", k), zap.Int("count", v))
 	}
 
 	if nonOkCount+okCount == 0 {
