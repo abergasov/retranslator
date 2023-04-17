@@ -70,6 +70,7 @@ func (r *Service) processConnection() {
 		r.log.Error("unable to connect to target host", err)
 		return
 	}
+	defer conn.Close()
 	client := v1.NewCommandStreamClient(conn)
 
 	stream, err := client.ListenCommands(r.ctx)
@@ -77,6 +78,7 @@ func (r *Service) processConnection() {
 		r.log.Error("unable to listen commands", err)
 		return
 	}
+	r.wg.Add(1)
 	go r.handleCommand(stream)
 	go r.sendResponse(stream)
 	r.wg.Wait()

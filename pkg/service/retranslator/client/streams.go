@@ -13,7 +13,6 @@ import (
 )
 
 func (r *Service) handleCommand(stream v1.CommandStream_ListenCommandsClient) {
-	r.wg.Add(1)
 	defer r.wg.Done()
 	r.requestCounter.DetectIP()
 	for {
@@ -81,9 +80,11 @@ func (r *Service) countRequests(statusCode int32) {
 }
 
 func (r *Service) logRequests() {
-	ticker := time.NewTicker(60 * time.Second)
+	ticker := time.NewTicker(1 * time.Second)
 	for range ticker.C {
-		r.printRequestCounts()
+		if time.Now().Second() == 0 {
+			r.printRequestCounts()
+		}
 	}
 }
 
