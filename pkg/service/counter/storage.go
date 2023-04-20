@@ -65,6 +65,7 @@ func (s *Service) backupState() {
 }
 
 func (s *Service) saveState() error {
+	s.log.Info("saving state")
 	s.counterMU.Lock()
 	state := s.counter
 	s.counterMU.Unlock()
@@ -75,5 +76,6 @@ func (s *Service) saveState() error {
 			}
 		}
 	}
+	s.log.Info("state saved")
 	return nil
 }

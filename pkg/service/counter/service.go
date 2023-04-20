@@ -70,4 +70,5 @@ func (s *Service) Stop() {
 	if err := s.saveState(); err != nil {
 		s.log.Error("failed save state on exist", err)
 	}
+	s.log.Info("stopped")
 }
