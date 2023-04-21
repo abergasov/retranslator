@@ -65,12 +65,12 @@ func (s *Service) backupState() {
 }
 
 func (s *Service) saveState() error {
-	s.log.Info("saving state")
 	s.counterMU.Lock()
 	state := s.counter
 	s.counterMU.Unlock()
 	for date, ips := range state {
 		for ip, count := range ips {
+			s.log.Info("saving state", zap.Uint64("count", count), zap.String("ip", ip))
 			if _, err := s.conn.Client().Exec(fmt.Sprintf(`INSERT INTO %s (retranslation_date, used_ip, total_counts) VALUES ('%s', '%s', %d) ON CONFLICT (retranslation_date, used_ip) DO UPDATE SET total_counts = %d;`, tableName, date, ip, count, count)); err != nil {
 				return fmt.Errorf("unable to save state: %w", err)
 			}
