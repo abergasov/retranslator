@@ -8,9 +8,15 @@ import (
 )
 
 type event struct {
-	Date  string `db:"retranslation_date"`
-	IP    string `db:"used_ip"`
-	Count uint64 `db:"total_counts"`
+	Date      string    `db:"retranslation_date"`
+	IP        string    `db:"used_ip"`
+	Count     uint64    `db:"total_counts"`
+	LastUsage time.Time `db:"-"`
+	LastI     string    `db:"last_update"`
+}
+
+func (e *event) parse() {
+	e.LastUsage, _ = time.Parse(time.DateTime, e.LastI)
 }
 
 func (s *Service) migrate() error {
@@ -19,6 +25,7 @@ func (s *Service) migrate() error {
 			retranslation_date text,
 			used_ip            text,
 			total_counts       integer,
+			last_update		   text,
 			constraint counter_stat_pk
 				primary key (retranslation_date, used_ip)
 		);`, tableName),
@@ -44,6 +51,7 @@ func (s *Service) loadState() error {
 		if err = rows.StructScan(&evt); err != nil {
 			return fmt.Errorf("unable to scan row: %w", err)
 		}
+		evt.parse()
 		if _, ok := data[evt.Date]; !ok {
 			data[evt.Date] = make(map[string]uint64)
 		}
@@ -71,7 +79,8 @@ func (s *Service) saveState() error {
 	for date, ips := range state {
 		for ip, count := range ips {
 			s.log.Info("saving state", zap.Uint64("count", count), zap.String("ip", ip))
-			if _, err := s.conn.Client().Exec(fmt.Sprintf(`INSERT INTO %s (retranslation_date, used_ip, total_counts) VALUES ('%s', '%s', %d) ON CONFLICT (retranslation_date, used_ip) DO UPDATE SET total_counts = %d;`, tableName, date, ip, count, count)); err != nil {
+			sql := fmt.Sprintf(`INSERT INTO %s (retranslation_date, used_ip, total_counts, last_update) VALUES (?, ?, ?, ?) ON CONFLICT (retranslation_date, used_ip) DO UPDATE SET total_counts = ?, last_update = ?;`, tableName)
+			if _, err := s.conn.Client().Exec(sql, date, ip, count, time.Now().Format(time.DateTime), count, time.Now().Format(time.DateTime)); err != nil {
 				return fmt.Errorf("unable to save state: %w", err)
 			}
 		}

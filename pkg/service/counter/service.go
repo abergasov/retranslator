@@ -11,7 +11,7 @@ import (
 
 const (
 	tableName   = "counter_stat"
-	maxRequests = 200_000
+	maxRequests = 100_000
 )
 
 // Service tracks the number of requests from specific IP addresses.

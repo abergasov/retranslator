@@ -74,5 +74,10 @@ logs_d: ## Show container logs
 	${info Show logs...}
 	docker logs -f retranslator
 
-.PHONY: help install-lint test gogen lint stop dev_up build run run_docker logs_d stop
+update: ## Update dependencies and run docker
+	${info Updating dependencies...}
+	git pull origin master
+	make run_docker
+
+.PHONY: help install-lint test gogen lint stop dev_up build run run_docker logs_d stop update
 .DEFAULT_GOAL := help

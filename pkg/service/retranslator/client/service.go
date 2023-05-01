@@ -28,13 +28,10 @@ type Service struct {
 }
 
 func NewRelay(log logger.AppLogger, host string, service *orchestrator.Service, requestCounter *counter.Service) *Service {
-	ctx, cancel := context.WithCancel(context.Background())
 	srv := &Service{
 		wg:             &sync.WaitGroup{},
 		log:            log,
 		targetHost:     host,
-		ctx:            ctx,
-		cancel:         cancel,
 		responses:      make(chan *model.Response, 1_000),
 		orchestra:      service,
 		requestCounts:  map[int32]int{},
@@ -46,6 +43,7 @@ func NewRelay(log logger.AppLogger, host string, service *orchestrator.Service, 
 
 func (r *Service) Start() {
 	r.log.Info("starting relay")
+	r.ctx, r.cancel = context.WithCancel(context.Background())
 	go func() {
 		for {
 			select {
