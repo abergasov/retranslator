@@ -3,7 +3,6 @@ package client
 import (
 	"io"
 	"net/http"
-	"os"
 	"time"
 
 	"go.uber.org/zap"
@@ -80,8 +79,7 @@ func (r *Service) countRequests(statusCode int32) {
 }
 
 func (r *Service) logRequests() {
-	ticker := time.NewTicker(1 * time.Second)
-	for range ticker.C {
+	for range r.counterTicker.C {
 		if time.Now().Second() == 0 {
 			r.printRequestCounts()
 		}

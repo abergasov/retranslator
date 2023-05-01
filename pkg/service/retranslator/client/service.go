@@ -25,6 +25,7 @@ type Service struct {
 	requestCounts   map[int32]int
 	requestCountsMU sync.Mutex
 	requestCounter  *counter.Service
+	counterTicker   *time.Ticker
 }
 
 func NewRelay(log logger.AppLogger, host string, service *orchestrator.Service, requestCounter *counter.Service) *Service {
@@ -37,12 +38,13 @@ func NewRelay(log logger.AppLogger, host string, service *orchestrator.Service, 
 		requestCounts:  map[int32]int{},
 		requestCounter: requestCounter,
 	}
-	go srv.logRequests()
 	return srv
 }
 
 func (r *Service) Start() {
 	r.log.Info("starting relay")
+	r.counterTicker = time.NewTicker(1 * time.Second)
+	go r.logRequests()
 	r.ctx, r.cancel = context.WithCancel(context.Background())
 	go func() {
 		for {
@@ -84,6 +86,7 @@ func (r *Service) processConnection() {
 
 func (r *Service) Stop() {
 	r.log.Info("stopping relay")
+	r.counterTicker.Stop()
 	r.cancel()
 	r.orchestra.Stop()
 	r.wg.Wait()
